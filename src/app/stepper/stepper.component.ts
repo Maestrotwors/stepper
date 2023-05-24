@@ -1,5 +1,4 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChildren, inject, QueryList, TemplateRef, ViewContainerRef } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChildren, EventEmitter, inject, Output, QueryList, TemplateRef, ViewContainerRef } from '@angular/core';
 import { StepDirective } from './directives/step.directive';
 
 @Component({
@@ -10,44 +9,44 @@ import { StepDirective } from './directives/step.directive';
 })
 export class StepperComponent implements AfterContentInit {
   @ContentChildren(StepDirective) contentChildren!: QueryList<StepDirective>;
-
-  private stepsCount = 0;
+  @Output() onStepChanged = new EventEmitter<number>();
   private currentStepIndex = 0;
 
   private cdr = inject(ChangeDetectorRef);
 
-  private renderContent(): void {
-    this.contentChildren.forEach(content => {
-      content.clear();
-    });
-    const currenContent = this.contentChildren.get(this.currentStepIndex);
-    currenContent?.show();
-    this.cdr.detectChanges();
-  }
-
   ngAfterContentInit(): void {
-    this.stepsCount = this.contentChildren.reduce((acc) => {
-      return ++acc;
-    }, 0);
-    this.renderContent();
+    this.selectStep(this.currentStepIndex);
   }
 
   next(): void {
-    if (this.currentStepIndex + 1 < this.stepsCount) {
-      this.currentStepIndex = this.currentStepIndex + 1;
-      this.renderContent();
+    let selectIndex;
+    if (this.currentStepIndex + 1 < this.contentChildren.length) {
+      selectIndex = this.currentStepIndex + 1;
+    } else {
+      selectIndex = 0;
     }
+
+    this.selectStep(selectIndex);
   }
 
   prev(): void {
-    alert(this.currentStepIndex);
-    if (this.currentStepIndex !== 0) {
-      this.currentStepIndex = this.currentStepIndex - 1;
-      this.renderContent();
+    let selectIndex;
+    if (this.currentStepIndex === 0) {
+      selectIndex = this.contentChildren.length - 1;
+    } else {
+      selectIndex = this.currentStepIndex - 1;
     }
+
+    this.selectStep(selectIndex);
   }
 
-  selectStep(index: number): void {}
-
-  onStepChanged(): void {}
+  selectStep(index: number): void {
+    const indexToDelete = this.currentStepIndex;
+    const toDelete = this.contentChildren.get(indexToDelete);
+    toDelete?.clear();
+    this.currentStepIndex = index;
+    const currenContent = this.contentChildren.get(index);
+    currenContent?.show();
+    this.onStepChanged.emit(this.currentStepIndex + 1);
+  }
 }

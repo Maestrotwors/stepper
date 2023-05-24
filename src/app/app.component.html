@@ -1,5 +1,6 @@
 <div>
-  <app-stepper>
+  {{selectedStep}}
+  <app-stepper (onStepChanged)="selectedStep = $event">
     <div *appStep>
       форма шага 1
     </div>

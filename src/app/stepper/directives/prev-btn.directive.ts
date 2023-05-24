@@ -1,4 +1,4 @@
-import { ContentChild, Directive, HostListener, inject } from '@angular/core';
+import { Directive, HostListener, inject } from '@angular/core';
 import { StepperComponent } from '../stepper.component';
 
 @Directive({
@@ -6,7 +6,6 @@ import { StepperComponent } from '../stepper.component';
 })
 export class PrevBtnDirective {
   private stepperComponent = inject(StepperComponent);
-  @ContentChild(PrevBtnDirective) contentChild!: PrevBtnDirective;
 
   @HostListener('click', ['$event']) onClick() {
     this.stepperComponent.prev();
