@@ -1,0 +1,24 @@
+<div>
+  {{selectedStep}}
+  <app-stepper (onStepChanged)="selectedStep = $event">
+    <div *appStep>
+      форма шага 1
+    </div>
+      
+    <div *appStep>
+      форма шага 2
+    </div>
+      
+      
+    <div *appStep>
+      форма шага 3
+    </div>
+
+    <div class="footer">
+      <button appPrevBtn>prev</button>
+      <button appNextBtn>next</button>
+    </div>
+  </app-stepper>
+</div>
+
+
