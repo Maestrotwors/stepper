@@ -1,4 +1,8 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+} from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -6,6 +10,13 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrls: ['./app.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AppComponent {
-  public selectedStep = 0;
+export class AppComponent implements OnInit {
+  form!: FormGroup;
+
+  ngOnInit() {
+    this.form = new FormGroup({
+      currentStep: new FormControl(0),
+    });
+  }
+
 }

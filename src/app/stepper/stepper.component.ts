@@ -1,4 +1,7 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChildren, EventEmitter, inject, Output, QueryList, TemplateRef, ViewContainerRef } from '@angular/core';
+import { AfterContentInit, ChangeDetectionStrategy, Component, ContentChildren, EventEmitter, inject, Output, QueryList, TemplateRef, ViewContainerRef, forwardRef } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ReplaySubject } from 'rxjs/internal/ReplaySubject';
+import { Subscription } from 'rxjs/internal/Subscription';
 import { StepDirective } from './directives/step.directive';
 
 @Component({
@@ -6,13 +9,22 @@ import { StepDirective } from './directives/step.directive';
   templateUrl: './stepper.component.html',
   styleUrls: ['./stepper.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => StepperComponent),
+      multi: true,
+    },
+  ],
 })
-export class StepperComponent implements AfterContentInit {
+export class StepperComponent
+  implements AfterContentInit, ControlValueAccessor
+{
   @ContentChildren(StepDirective) contentChildren!: QueryList<StepDirective>;
   @Output() onStepChanged = new EventEmitter<number>();
   private currentStepIndex = 0;
 
-  private cdr = inject(ChangeDetectorRef);
+  //private cdr = inject(ChangeDetectorRef);
 
   ngAfterContentInit(): void {
     this.selectStep(this.currentStepIndex);
@@ -44,9 +56,27 @@ export class StepperComponent implements AfterContentInit {
     const indexToDelete = this.currentStepIndex;
     const toDelete = this.contentChildren.get(indexToDelete);
     toDelete?.clear();
-    this.currentStepIndex = index;
+    this.writeValue(index);
+    this.onChange(index);
+    this.onTouch();
     const currenContent = this.contentChildren.get(index);
     currenContent?.show();
     this.onStepChanged.emit(this.currentStepIndex + 1);
+  }
+
+  onChange: any = (value: number) => {};
+
+  onTouch: any = () => {};
+
+  registerOnChange(fn: any): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: any): void {
+    this.onTouch = fn;
+  }
+
+  writeValue(input: number) {
+    this.currentStepIndex = input;
   }
 }
