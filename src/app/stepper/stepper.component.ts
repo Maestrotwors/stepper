@@ -54,12 +54,12 @@ export class StepperComponent
 
   selectStep(index: number): void {
     const indexToDelete = this.currentStepIndex;
-    const toDelete = this.contentChildren.get(indexToDelete);
+    const toDelete = this.contentChildren?.get(indexToDelete);
     toDelete?.clear();
-    this.writeValue(index);
+    this.currentStepIndex = index;
     this.onChange(index);
     this.onTouch();
-    const currenContent = this.contentChildren.get(index);
+    const currenContent = this.contentChildren?.get(index);
     currenContent?.show();
     this.onStepChanged.emit(this.currentStepIndex + 1);
   }
@@ -77,6 +77,6 @@ export class StepperComponent
   }
 
   writeValue(input: number) {
-    this.currentStepIndex = input;
+    this.selectStep(input);
   }
 }

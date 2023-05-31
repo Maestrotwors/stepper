@@ -11,11 +11,18 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent implements OnInit {
-  form!: FormGroup;
+  form = new FormGroup({
+      currentStep: new FormControl(0),
+      currentStepInput: new FormControl(0),
+  });
 
   ngOnInit() {
-    this.form = new FormGroup({
-      currentStep: new FormControl(0),
+    this.form.controls.currentStep.valueChanges.subscribe(data => {
+      this.form.controls.currentStepInput.setValue(data, { emitEvent: false });
+    });
+
+    this.form.controls.currentStepInput.valueChanges.subscribe((data) => {
+      this.form.controls.currentStep.setValue(data, { emitEvent: false });
     });
   }
 
